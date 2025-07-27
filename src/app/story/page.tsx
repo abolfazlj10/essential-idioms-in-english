@@ -50,12 +50,6 @@ export default function Story () {
 
     const scrollFade = useScrollFade();
 
-    // Color mapping for different levels
-    const levelColors: Record<Level, string> = {
-        'elementry': 'border-green-400',
-        'intermediate': 'border-blue-400',
-        'advanced': 'border-red-400'
-    }
 
     const selectLevel = (theLevel: Level): void => {
         // Check if current level has any lessons selected
@@ -268,6 +262,33 @@ export default function Story () {
             setSteper(2)
     },[words])
 
+    const NewStorySetting = () => {
+        // Reset all story-related data
+        setShowStory(false)
+        setStory("")
+        setStoryFa("")
+        setStoryEn("")
+        setLoadingStory(false)
+        
+        // Reset all selection data
+        setWords([])
+        setWordLevels({})
+        setWordLessons({})
+        setLessons([])
+        setLevel(['elementry'])
+        setCurrentSelectedLevel('elementry')
+        setCurrentViewingLesson(null)
+        setInformation("")
+        setSteper(1)
+        
+        // Reset scroll positions
+        if (scroller.current) {
+            scroller.current.scrollTo(0, 0)
+        }
+        if (mobileScroller.current) {
+            mobileScroller.current.scrollTo(0, 0)
+        }
+    }
 
     useEffect(() => {
         const mediaQuery = window.matchMedia('(min-width: 1280px)');
@@ -286,7 +307,7 @@ export default function Story () {
         <div className="h-full border-1 max-mobile:border-0 p-5 max-mobile:pt-3 max-mobile:pb-1 max-mobile:px-2 overflow-y-auto">
             <div className="h-full flex flex-col gap-3">
                 {showStory ? (
-                    <ResultStory isShow={setShowStory} theStory={story} storyPersian={storyFa} storyEnglish={storyEn}  />
+                    <ResultStory isShow={setShowStory} newStory={NewStorySetting} theStory={story} storyPersian={storyFa} storyEnglish={storyEn}  />
                 ) : (
                     <>
                         <Appbar onBackClick={()=> router.push('/')} title='Story creator' iconSrc="./icon/Otter.svg" rightButton={isLargeScreen ? false : <button className="border shadow-lg text-xl max-tablet:text-lg bg-gradient-to-br from-primaryColor from-50% to-bgColor text-white rounded-lg p-2 max-tablet:py-[6px] max-tablet:px-2 cursor-pointer" onClick={()=>dialogModal.current?.showModal()}><TbTimeline /></button>}/>
