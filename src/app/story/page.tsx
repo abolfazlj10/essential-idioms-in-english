@@ -138,67 +138,37 @@ export default function Story () {
     }
 
     const StoryCreator = async (): Promise<void> => {
-        
-        // storyCreator({
-            //     idioms: words,
-            //     information: information
-            // },{
-                //     onSuccess: (data) => {
-                    //         if(data.status)
-                    //             console.log(data)
-                    //         else
-                    //             console.log('errorr')
-                    //     }
-                    // })
-                    
-        const apiKey = 'AIzaSyCDXMKBUSPiT5eL13KBgAdP4GMX_Q9S_PY'
-        const theWords = words.join(' - ');
-        // Updated prompt for both Persian and English (in English)
         setLoadingStory(true);
         setStory("");
         setStoryFa("");
         setStoryEn("");
-        try {
-            const prompt = `Write a story using these idioms for a language learner. First, provide the story in Persian (Farsi) and then its English translation, each clearly labeled.\nIn both the Persian and English stories, put the exact translation or equivalent of each idiom in [brackets] so it can be highlighted.\nIdioms: ${theWords}.${information ? '\nAdditional information: ' + information : ''}\nOutput format:\nPersian:\n[FA]\nEnglish:\n[EN]`;
-            const ai = new GoogleGenAI({ apiKey: apiKey });
-            const response = await ai.models.generateContent({
-                model: "gemini-2.5-flash",
-                contents: prompt,
-            });
-            // Parse the response for FA and EN parts robustly
-            const text = response.text || "No story generated.";
-            setStory(text); // still keep the raw output
-            // Try multiple regexes and fallback splitting
-            let fa = "", en = "";
-            let faMatch = text.match(/Persian:?\s*\[FA\]([\s\S]*?)English:?/i);
-            let enMatch = text.match(/English:?\s*\[EN\]([\s\S]*)/i);
-            if (!faMatch || !enMatch) {
-                // Try just [FA] and [EN]
-                faMatch = text.match(/\[FA\]([\s\S]*?)\[EN\]/i);
-                enMatch = text.match(/\[EN\]([\s\S]*)/i);
-            }
-            if (!faMatch || !enMatch) {
-                // Try splitting by [FA] and [EN] manually
-                const faIdx = text.indexOf('[FA]');
-                const enIdx = text.indexOf('[EN]');
-                if (faIdx !== -1 && enIdx !== -1) {
-                    fa = text.substring(faIdx + 4, enIdx).trim();
-                    en = text.substring(enIdx + 4).trim();
+        setShowStory(false);
+        
+        storyCreator({
+            idioms: words,
+            information: information
+        }, {
+            onSuccess: (data: any) => {
+                // فرض بر این است که data شامل story، storyFa و storyEn است
+                if (data && data.status) {
+                    setStory(data.story || "");
+                    setStoryFa(data.storyFa || "");
+                    setStoryEn(data.storyEn || "");
+                    setShowStory(true);
+                } else {
+                    setStory("Error: Invalid response from server");
+                    setStoryFa("");
+                    setStoryEn("");
                 }
-            } else {
-                fa = faMatch[1]?.trim() || "";
-                en = enMatch[1]?.trim() || "";
+                setLoadingStory(false);
+            },
+            onError: (err: any) => {
+                setStory("Error generating story: " + (err?.message || "Unknown error"));
+                setStoryFa("");
+                setStoryEn("");
+                setLoadingStory(false);
             }
-            setStoryFa(fa);
-            setStoryEn(en);
-            setShowStory(true);
-        } catch (err: any) {
-            setStory("Error generating story: " + (err?.message || "Unknown error"));
-            setStoryFa("");
-            setStoryEn("");
-        } finally {
-            setLoadingStory(false);
-        }
+        });
     }
     
     useEffect(() => {
