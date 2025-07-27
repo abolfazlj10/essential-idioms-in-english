@@ -133,7 +133,7 @@ export const ResultStory = ({
             </div>
             
             {storyPersian && storyEnglish ? (
-                <div className="flex flex-col md:flex-row flex-1 items-stretch overflow-y-scroll">
+                <div className="flex flex-col md:flex-row flex-1 items-stretch overflow-y-auto">
                     {/* English Box */}
                     <div className={`flex-1 bg-gray-50 rounded-2xl shadow-lg p-6 flex flex-col gap-4 max-mobile:gap-0 ring-2 ring-gray-200 border border-gray-100 relative transition-all duration-300 scale-90 ${focusMode==='fa' ? 'opacity-30 blur-[2px]' : focusMode==='en' ? 'scale-95 shadow-2xl z-10' : ''}`}>
                         <div className="flex items-center gap-2 mb-2">

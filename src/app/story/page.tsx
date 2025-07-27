@@ -283,7 +283,7 @@ export default function Story () {
     }, []);
 
     return(
-        <div ref={scrollFade} className="h-full border-1 max-mobile:border-0 p-5 max-mobile:pt-3 max-mobile:pb-1 max-mobile:px-2 overflow-y-auto">
+        <div className="h-full border-1 max-mobile:border-0 p-5 max-mobile:pt-3 max-mobile:pb-1 max-mobile:px-2 overflow-y-auto">
             <div className="h-full flex flex-col gap-3">
                 {showStory ? (
                     <ResultStory isShow={setShowStory} theStory={story} storyPersian={storyFa} storyEnglish={storyEn}  />
