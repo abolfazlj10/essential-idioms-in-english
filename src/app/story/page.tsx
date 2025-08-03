@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GoogleGenAI } from "@google/genai";
 // ________ ts types ________
 import type { Book, Level, LevelArray } from "@/types/types";
 // __________ jsons the Book __________
@@ -9,9 +8,7 @@ import elementry from '../../data/book/elementry.json'
 import intermediate from '../../data/book/intermediate.json'
 import advanced from '../../data/book/advanced.json'
 // _______ icons _______
-import { TbBoxMultiple1 } from "react-icons/tb";
-import { TbBoxMultiple2 } from "react-icons/tb";
-import { TbBoxMultiple3 } from "react-icons/tb";
+import { TbBoxMultiple1,TbBoxMultiple2, TbBoxMultiple3 } from "react-icons/tb";
 import { MdClose } from "react-icons/md";
 import { TbTimeline } from "react-icons/tb";
 import { FaSpinner , FaCheck } from "react-icons/fa";
@@ -21,6 +18,7 @@ import Stepper from "@/components/story/stepper"
 import ResultStory from "@/components/story/result";
 import { useScrollFade } from "@/hooks/useScrollFade";
 import { useGeminiStory } from "@/hooks/useGemini";
+import { toast } from 'react-hot-toast';
 const MAX_WORDS_LIMIT = 6;
 
 export default function Story () {
@@ -138,67 +136,43 @@ export default function Story () {
     }
 
     const StoryCreator = async (): Promise<void> => {
-        
-        // storyCreator({
-            //     idioms: words,
-            //     information: information
-            // },{
-                //     onSuccess: (data) => {
-                    //         if(data.status)
-                    //             console.log(data)
-                    //         else
-                    //             console.log('errorr')
-                    //     }
-                    // })
-                    
-        const apiKey = 'AIzaSyCDXMKBUSPiT5eL13KBgAdP4GMX_Q9S_PY'
-        const theWords = words.join(' - ');
-        // Updated prompt for both Persian and English (in English)
         setLoadingStory(true);
         setStory("");
         setStoryFa("");
         setStoryEn("");
-        try {
-            const prompt = `Write a story using these idioms for a language learner. First, provide the story in Persian (Farsi) and then its English translation, each clearly labeled.\nIn both the Persian and English stories, put the exact translation or equivalent of each idiom in [brackets] so it can be highlighted.\nIdioms: ${theWords}.${information ? '\nAdditional information: ' + information : ''}\nOutput format:\nPersian:\n[FA]\nEnglish:\n[EN]`;
-            const ai = new GoogleGenAI({ apiKey: apiKey });
-            const response = await ai.models.generateContent({
-                model: "gemini-2.5-flash",
-                contents: prompt,
-            });
-            // Parse the response for FA and EN parts robustly
-            const text = response.text || "No story generated.";
-            setStory(text); // still keep the raw output
-            // Try multiple regexes and fallback splitting
-            let fa = "", en = "";
-            let faMatch = text.match(/Persian:?\s*\[FA\]([\s\S]*?)English:?/i);
-            let enMatch = text.match(/English:?\s*\[EN\]([\s\S]*)/i);
-            if (!faMatch || !enMatch) {
-                // Try just [FA] and [EN]
-                faMatch = text.match(/\[FA\]([\s\S]*?)\[EN\]/i);
-                enMatch = text.match(/\[EN\]([\s\S]*)/i);
-            }
-            if (!faMatch || !enMatch) {
-                // Try splitting by [FA] and [EN] manually
-                const faIdx = text.indexOf('[FA]');
-                const enIdx = text.indexOf('[EN]');
-                if (faIdx !== -1 && enIdx !== -1) {
-                    fa = text.substring(faIdx + 4, enIdx).trim();
-                    en = text.substring(enIdx + 4).trim();
+        setShowStory(false);
+        
+        storyCreator({
+            idioms: words,
+            information: information
+        }, {
+            onSuccess: (data: any) => {
+                if (data && data.status) {
+                    setStory(data.story || "");
+                    setStoryFa(data.storyFa || "");
+                    setStoryEn(data.storyEn || "");
+                    setShowStory(true);
+                } else {
+                    setStory("Error: Invalid response from server");
+                    setStoryFa("");
+                    setStoryEn("");
+                    toast.error(
+                        `Story creation request failed.\nIf your VPN is turned off, please enable it and try again.`
+                    );
                 }
-            } else {
-                fa = faMatch[1]?.trim() || "";
-                en = enMatch[1]?.trim() || "";
+                setLoadingStory(false);
+            },
+            onError: (err: any) => {
+                setStory("Error generating story: " + (err && err.message ? err.message : "Unknown error"));
+                setStoryFa("");
+                setStoryEn("");
+                // حتی اگر err پیام نداشت یا undefined بود، toast را نمایش بده
+                toast.error(
+                    `Story creation request failed.\nIf your VPN is turned off, please enable it and try again.`
+                );
+                setLoadingStory(false);
             }
-            setStoryFa(fa);
-            setStoryEn(en);
-            setShowStory(true);
-        } catch (err: any) {
-            setStory("Error generating story: " + (err?.message || "Unknown error"));
-            setStoryFa("");
-            setStoryEn("");
-        } finally {
-            setLoadingStory(false);
-        }
+        });
     }
     
     useEffect(() => {
