@@ -1,7 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import ProgressBar from '@/components/ui/progress-bar'
+import LevelBadge from '@/components/ui/level-badge'
 
 interface Level {
   id: string
@@ -28,47 +31,61 @@ export default function LevelCard({ level, index, onSelect }: LevelCardProps) {
         ease: "easeOut"
       }}
       whileHover={{ 
-        y: -8, 
-        scale: 1.05,
+        y: -4, 
+        scale: 1.02,
         transition: { 
-          duration: 0.4,
+          duration: 0.3,
           ease: "easeInOut"
         }
       }}
       whileTap={{ scale: 0.98 }}
     >
       <motion.div
-        className="relative group cursor-pointer bg-white rounded-2xl shadow-lg border-2 border-gray-100 overflow-hidden transition-all duration-300 ease-out"
+        className="relative group cursor-pointer bg-white rounded-2xl shadow-sm border border-gray-200/50 overflow-visible transition-all duration-300 ease-out"
         onClick={() => onSelect(level.id)}
         whileHover={{ 
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-          borderColor: "rgb(229, 231, 235)"
+          boxShadow: "0 20px 40px -8px rgba(0, 0, 0, 0.12)",
+          borderColor: "rgb(156, 163, 175)",
+          y: -4
         }}
         transition={{ 
-          duration: 0.4,
+          duration: 0.3,
           ease: "easeInOut"
         }}
       >
-        {/* Gradient Background */}
+        {/* Subtle Background */}
         <motion.div 
-          className={`absolute inset-0 bg-gradient-to-br ${level.color}`}
+          className="absolute inset-0 bg-gray-50/30"
           initial={{ opacity: 0 }}
-          whileHover={{ opacity: 0.1 }}
+          whileHover={{ opacity: 1 }}
           transition={{ 
-            duration: 0.5,
+            duration: 0.3,
             ease: "easeInOut"
           }}
         />
         
+        {/* Level Badge */}
+        <LevelBadge 
+          levelId={level.id}
+          color={level.color}
+          animationDelay={0.4 + (index * 0.1)}
+        />
+
         {/* Card Content */}
-        <div className="relative p-8 text-center">
+        <div className="relative p-8 pt-12 text-center">
           {/* Icon */}
           <motion.div 
-            className="text-6xl mb-6"
+            className="mb-6 flex justify-center"
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.3 }}
           >
-            {level.icon}
+            <Image
+              src={`/icon/${level.icon}`}
+              alt={`${level.name} icon`}
+              width={64}
+              height={64}
+              className="text-gray-600"
+            />
           </motion.div>
           
           {/* Level Name */}
@@ -76,41 +93,48 @@ export default function LevelCard({ level, index, onSelect }: LevelCardProps) {
             {level.name}
           </h3>
           
+          {/* Progress Bar */}
+          <ProgressBar 
+            percentage={level.id === 'elementary' ? 25 : level.id === 'intermediate' ? 60 : 90}
+            color={level.color}
+            animationDelay={0.3 + (index * 0.1)}
+          />
+          
           {/* Description */}
-          <p className="text-gray-600 mb-6 leading-relaxed">
+          <p className="text-gray-600 mb-8 leading-relaxed">
             {level.description}
           </p>
           
           {/* Select Button */}
           <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <Button 
-              className={`w-full bg-gradient-to-r ${level.color} text-white font-semibold py-3`}
+              className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 rounded-lg transition-colors duration-200 cursor-pointer"
             >
-              Select This Level
+              Get Started
             </Button>
           </motion.div>
         </div>
         
         {/* Decorative Elements */}
         <motion.div 
-          className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-white/20 to-transparent rounded-full"
-          initial={{ opacity: 0 }}
-          whileHover={{ opacity: 1 }}
+          className="absolute top-6 right-6 w-3 h-3 bg-gray-300 rounded-full"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ 
-            duration: 0.6,
-            ease: "easeInOut"
+            duration: 0.4,
+            delay: 0.8 + (index * 0.1)
           }}
         />
         <motion.div 
-          className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-tr from-white/20 to-transparent rounded-full"
-          initial={{ opacity: 0 }}
-          whileHover={{ opacity: 1 }}
+          className="absolute bottom-6 left-6 w-2 h-2 bg-gray-200 rounded-full"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ 
-            duration: 0.6,
-            ease: "easeInOut"
+            duration: 0.4,
+            delay: 1.0 + (index * 0.1)
           }}
         />
       </motion.div>

@@ -21,21 +21,21 @@ const levels: Level[] = [
     name: 'Elementry Level',
     description: 'Basic and everyday idioms',
     color: 'from-green-400 to-green-600',
-    icon: '🌱'
+    icon: 'Seedling.svg'
   },
   {
     id: 'intermediate', 
     name: 'Intermediate Level',
     description: 'Intermediate and practical idioms',
     color: 'from-blue-400 to-blue-600',
-    icon: '📚'
+    icon: 'Potted Plant.svg'
   },
   {
     id: 'advanced',
     name: 'Advanced Level', 
     description: 'Advanced and specialized idioms',
     color: 'from-purple-400 to-purple-600',
-    icon: '🎯'
+    icon: 'Deciduous Tree.svg'
   }
 ]
 
@@ -57,7 +57,7 @@ export default function LevelSelection({ onLevelSelect }: LevelSelectionProps) {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-7xl w-full">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl w-full">
         {levels.map((level, index) => (
           <LevelCard
             key={level.id}
